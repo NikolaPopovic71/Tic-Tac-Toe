@@ -16,6 +16,7 @@ const board = document.getElementById("board");
 const winnerMessage = document.getElementById("winnerMessage");
 const restartButton = document.getElementById("restartButton");
 let oTurn;
+let gameActive = true; // New flag to prevent further moves after win
 
 startGame();
 
@@ -23,6 +24,7 @@ restartButton.addEventListener("click", startGame);
 
 function startGame() {
   oTurn = false;
+  gameActive = true; // Reset gameActive state
 
   // Remove the line if it exists
   const line = document.querySelector(".line");
@@ -37,13 +39,17 @@ function startGame() {
     cell.removeEventListener("click", handleClick);
     cell.addEventListener("click", handleClick, { once: true });
   });
+
   winnerMessage.innerText = "";
 }
 
 function handleClick(e) {
+  if (!gameActive) return; // Prevent further moves if game has ended
+
   const cell = e.target;
   const currentClass = oTurn ? O_CLASS : X_CLASS;
   placeMark(cell, currentClass);
+
   if (checkWin(currentClass)) {
     endGame(false);
   } else if (isDraw()) {
@@ -54,6 +60,8 @@ function handleClick(e) {
 }
 
 function endGame(draw) {
+  gameActive = false; // Set the game to inactive after win or draw
+
   if (draw) {
     winnerMessage.innerText = "It's a Draw!";
   } else {
@@ -127,3 +135,4 @@ function checkWin(currentClass) {
     });
   });
 }
+
